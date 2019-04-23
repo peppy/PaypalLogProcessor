@@ -33,6 +33,8 @@ namespace PaypalLogProcessor
             "General Account Correction",
         };
 
+        private const string output_filename = "out.csv";
+
         private const string currency_conversion_type = "General Currency Conversion";
 
         public static void Main(string[] args)
@@ -83,7 +85,7 @@ namespace PaypalLogProcessor
             
             Console.WriteLine($"Writing to disk...");
 
-            writeOutput(output, "out.csv");
+            writeOutput(output, output_filename);
             
             Console.WriteLine($"Done!");
         }
@@ -105,6 +107,9 @@ namespace PaypalLogProcessor
             var transactions = new List<dynamic>();
             foreach (var f in Directory.GetFiles("./", "*.CSV", SearchOption.AllDirectories))
             {
+                if (Path.GetFileName(f) == output_filename)
+                    continue;
+
                 Console.WriteLine($"Reading from {f}...");
                 using (var csv = new CsvReader(File.OpenText(f), new Configuration
                 {
