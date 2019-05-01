@@ -33,7 +33,7 @@ namespace PaypalLogProcessor
             "General Account Correction",
         };
 
-        private const string output_filename = "out.csv";
+        private static string getOutputFilename(string output) => $"out.{output}.csv";
 
         private const string currency_conversion_type = "General Currency Conversion";
 
@@ -43,6 +43,29 @@ namespace PaypalLogProcessor
 
             Console.WriteLine($"Read {transactions.Count} transactions");
 
+            outputGSTTransactions(transactions);
+            outputExpenses(transactions);
+        }
+
+        private static void outputGSTTransactions(List<dynamic> transactions)
+        {
+            transactions = transactions
+                .Where(t => t.CountryCode == "AU")
+                .ToList();
+
+            transactions = transactions.Where(t => t.Type != currency_conversion_type).ToList();
+
+            Console.WriteLine($"Filtered to {transactions.Count()} AU transactions");
+
+            Console.WriteLine($"Writing to disk...");
+
+            writeOutput(transactions, getOutputFilename("gst"));
+
+            Console.WriteLine($"Done!");
+        }
+
+        private static void outputExpenses(List<dynamic> transactions)
+        {
             transactions = transactions
                 .Where(t => t.BalanceImpact == "Debit")
                 .Where(t => t.Status == "Completed")
@@ -50,11 +73,11 @@ namespace PaypalLogProcessor
 
             // remove currency converison lines from main list.
             var conversions = transactions.Where(t => t.Type == currency_conversion_type).ToList();
-            
+
             transactions = transactions.Where(t => t.Type != currency_conversion_type).ToList();
-            
+
             Console.WriteLine($"Filtered to {transactions.Count()} debit transactions");
-            
+
             Console.WriteLine($"Adding currency rates for {conversions.Count()} found conversions...");
             // associate currency conversions and rates
             foreach (var c in conversions)
@@ -65,7 +88,7 @@ namespace PaypalLogProcessor
             }
 
             var output = new List<dynamic>();
-            
+
             Console.WriteLine($"Creating output records...");
 
             foreach (var t in transactions)
@@ -76,17 +99,17 @@ namespace PaypalLogProcessor
                 o.Currency = t.Currency;
                 o.Amount = t.Net;
                 o.Number = t.TransactionID;
-                o.Notes = string.Join('\t', new [] { t.Subject, t.Note }.Where(s => !string.IsNullOrEmpty(s)));
+                o.Notes = string.Join('\t', new[] { t.Subject, t.Note }.Where(s => !string.IsNullOrEmpty(s)));
                 if (t.Currency != "USD")
                     o.Rate = t.Rate;
 
                 output.Add(o);
             }
-            
+
             Console.WriteLine($"Writing to disk...");
 
-            writeOutput(output, output_filename);
-            
+            writeOutput(output, getOutputFilename("expenses"));
+
             Console.WriteLine($"Done!");
         }
 
@@ -107,7 +130,7 @@ namespace PaypalLogProcessor
             var transactions = new List<dynamic>();
             foreach (var f in Directory.GetFiles("./", "*.CSV", SearchOption.AllDirectories))
             {
-                if (Path.GetFileName(f) == output_filename)
+                if (Path.GetFileName(f).StartsWith("out"))
                     continue;
 
                 Console.WriteLine($"Reading from {f}...");
