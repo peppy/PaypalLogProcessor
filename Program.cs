@@ -106,8 +106,16 @@ namespace PaypalLogProcessor
             {
                 var txn = transactions.FirstOrDefault(t => t.TransactionID == c.ReferenceTxnID);
                 if (txn != null)
+                {
                     txn.Rate = c.Net / txn.Net;
+                    txn.NetUSD = c.Net;
+                }
             }
+
+            Console.WriteLine("Summary:");
+
+            foreach (var typeGroup in transactions.GroupBy(t => t.Type))
+                Console.WriteLine($"{typeGroup.Key.PadRight(50)} : {typeGroup.Sum(t => (decimal)t.NetUSD):C}");
 
             var output = new List<dynamic>();
 
