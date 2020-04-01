@@ -57,6 +57,8 @@ namespace PaypalLogProcessor
                 t.NetUSD = t.Net;
             });
 
+            Console.WriteLine("Ordering by date..");
+            transactions = transactions.OrderBy(t => t.DateTime).ToList();
 
             outputGSTTransactions(transactions);
             outputExpenses(transactions);
