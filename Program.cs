@@ -134,6 +134,7 @@ namespace PaypalLogProcessor
                 o.Amount = $"{t.Net:2}";
                 o.Number = t.TransactionID;
                 o.Notes = string.Join('\t', new[] { t.Subject, t.Note }.Where(s => !string.IsNullOrEmpty(s)));
+                o.Type = t.Type;
                 if (t.Currency != "USD")
                 {
                     try
