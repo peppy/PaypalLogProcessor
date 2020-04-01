@@ -26,7 +26,7 @@ namespace PaypalLogProcessor
             "Chargeback",
             //"Donation Payment",
             "Chargeback Fee",
-            "General Withdrawal",
+            //"General Withdrawal",
             "Hold on Available Balance",
             //"Mass payment",
             //"Fee for Mass Pay request",
