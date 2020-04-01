@@ -110,6 +110,10 @@ namespace PaypalLogProcessor
                     txn.Rate = c.Net / txn.Net;
                     txn.NetUSD = c.Net;
                 }
+                else
+                {
+                    Console.WriteLine($"Couldn't find matching transaction for currency conversion ({c.ReferenceTxnID})");
+                }
             }
 
             Console.WriteLine("Summary:");
@@ -131,7 +135,15 @@ namespace PaypalLogProcessor
                 o.Number = t.TransactionID;
                 o.Notes = string.Join('\t', new[] { t.Subject, t.Note }.Where(s => !string.IsNullOrEmpty(s)));
                 if (t.Currency != "USD")
-                    o.Rate = t.Rate;
+                {
+                    try
+                    {
+                        o.Rate = t.Rate;
+                    }
+                    catch
+                    {
+                    }
+                }
 
                 output.Add(o);
             }
