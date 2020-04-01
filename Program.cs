@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -41,6 +42,8 @@ namespace PaypalLogProcessor
 
         public static void Main(string[] args)
         {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-AU");
+
             List<dynamic> transactions = getTransactions();
 
             Console.WriteLine($"Read {transactions.Count} transactions");
