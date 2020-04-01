@@ -72,7 +72,7 @@ namespace PaypalLogProcessor
         private static void outputGSTTransactions(List<dynamic> transactions)
         {
             transactions = transactions
-                .Where(t => t.CountryCode == "AU")
+                .Where(t => t.BuyerCountryCode == "AU")
                 .ToList();
 
             transactions = transactions.Where(t => t.Type != currency_conversion_type).ToList();
