@@ -90,7 +90,7 @@ namespace PaypalLogProcessor
         {
             transactions = transactions
                 .Where(t => t.BalanceImpact == "Debit")
-                .Where(t => t.Status == "Completed")
+                .Where(t => t.Status == "Completed" || t.Status == "Pending")
                 .Where(t => ignore_types.All(ty => ty != t.Type)).ToList();
 
             // remove currency converison lines from main list.
