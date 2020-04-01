@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
 
@@ -42,6 +44,16 @@ namespace PaypalLogProcessor
             List<dynamic> transactions = getTransactions();
 
             Console.WriteLine($"Read {transactions.Count} transactions");
+            Console.WriteLine("Parsing data types..");
+            Parallel.ForEach(transactions, t =>
+            {
+                t.DateTime = DateTime.Parse(t.Date);
+                t.Net = decimal.Parse(t.Net);
+                t.Balance = decimal.Parse(t.Balance);
+
+                t.NetUSD = t.Net;
+            });
+
 
             outputGSTTransactions(transactions);
             outputExpenses(transactions);
@@ -84,7 +96,7 @@ namespace PaypalLogProcessor
             {
                 var txn = transactions.FirstOrDefault(t => t.TransactionID == c.ReferenceTxnID);
                 if (txn != null)
-                    txn.Rate = decimal.Parse(c.Net) / decimal.Parse(txn.Net);
+                    txn.Rate = c.Net / txn.Net;
             }
 
             var output = new List<dynamic>();
@@ -97,7 +109,7 @@ namespace PaypalLogProcessor
                 o.Date = t.Date.PadLeft(10, '0');
                 o.Payee = string.IsNullOrEmpty(t.Name) ? "PayPal" : t.Name;
                 o.Currency = t.Currency;
-                o.Amount = t.Net;
+                o.Amount = $"{t.Net:2}";
                 o.Number = t.TransactionID;
                 o.Notes = string.Join('\t', new[] { t.Subject, t.Note }.Where(s => !string.IsNullOrEmpty(s)));
                 if (t.Currency != "USD")
