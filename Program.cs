@@ -93,7 +93,7 @@ namespace PaypalLogProcessor
                 .Where(t => t.Status == "Completed" || t.Status == "Pending")
                 .Where(t => ignore_types.All(ty => ty != t.Type)).ToList();
 
-            // remove currency converison lines from main list.
+            // remove currency conversion lines from main list.
             var conversions = transactions.Where(t => t.Type == currency_conversion_type).ToList();
 
             transactions = transactions.Where(t => t.Type != currency_conversion_type).ToList();
