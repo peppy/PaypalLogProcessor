@@ -47,6 +47,8 @@ namespace PaypalLogProcessor
             List<dynamic> transactions = getTransactions();
 
             Console.WriteLine($"Read {transactions.Count} transactions");
+            Console.WriteLine();
+
             Console.WriteLine("Parsing data types..");
             Parallel.ForEach(transactions, t =>
             {
@@ -59,6 +61,9 @@ namespace PaypalLogProcessor
 
             Console.WriteLine("Ordering by date..");
             transactions = transactions.OrderBy(t => t.DateTime).ToList();
+
+            Console.WriteLine($"Opening Balance: {transactions.First().Balance - transactions.First().Net}");
+            Console.WriteLine($"Closing Balance: {transactions.Last().Balance}");
 
             outputGSTTransactions(transactions);
             outputExpenses(transactions);
