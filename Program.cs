@@ -141,8 +141,9 @@ namespace PaypalLogProcessor
                     {
                         o.Rate = t.Rate;
                     }
-                    catch
+                    catch (Exception)
                     {
+                        Console.WriteLine($"Missing conversion rate for transaction {o.Number}");
                     }
                 }
 
