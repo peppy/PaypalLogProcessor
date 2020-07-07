@@ -72,7 +72,7 @@ namespace PaypalLogProcessor
         private static void outputGSTTransactions(List<dynamic> transactions)
         {
             transactions = transactions
-                .Where(t => t.BalanceImpact == "Debit")
+                .Where(t => t.BalanceImpact == "Credit")
                 .Where(t => t.Status == "Completed" || t.Status == "Pending")
                 .Where(t => t.BuyerCountryCode == "AU")
                 .ToList();
@@ -87,12 +87,12 @@ namespace PaypalLogProcessor
             foreach (var t in transactions)
                 t.GST = t.NetUSD / 11;
 
-            Console.WriteLine($"GST Revenue Total (USD$): {transactions.Sum(t => (decimal) -t.GST):C}");
+            Console.WriteLine($"GST Revenue Total (USD$): {transactions.Sum(t => (decimal)t.GST):C}");
 
             Console.WriteLine("Monthly:");
 
             foreach (var typeGroup in transactions.GroupBy(t => t.DateTime.Month.ToString()))
-                Console.WriteLine($"{typeGroup.Key.PadRight(10)} : {typeGroup.Sum(t => (decimal) -t.GST):C}");
+                Console.WriteLine($"{typeGroup.Key.PadRight(10)} : {typeGroup.Sum(t => (decimal)t.GST):C}");
 
             Console.WriteLine($"Done!");
         }
@@ -131,7 +131,7 @@ namespace PaypalLogProcessor
             Console.WriteLine("Summary:");
 
             foreach (var typeGroup in transactions.GroupBy(t => t.Type))
-                Console.WriteLine($"{typeGroup.Key.PadRight(50)} : {typeGroup.Sum(t => (decimal) t.NetUSD):C}");
+                Console.WriteLine($"{typeGroup.Key.PadRight(50)} : {typeGroup.Sum(t => (decimal)t.NetUSD):C}");
 
             var output = new List<dynamic>();
 
@@ -145,7 +145,7 @@ namespace PaypalLogProcessor
                 o.Currency = t.Currency;
                 o.Amount = $"{t.Net:2}";
                 o.Number = t.TransactionID;
-                o.Notes = string.Join('\t', new[] {t.Subject, t.Note}.Where(s => !string.IsNullOrEmpty(s)));
+                o.Notes = string.Join('\t', new[] { t.Subject, t.Note }.Where(s => !string.IsNullOrEmpty(s)));
                 o.Type = t.Type;
                 if (t.Currency != "USD")
                 {
