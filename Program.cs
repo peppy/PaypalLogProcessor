@@ -92,7 +92,7 @@ namespace PaypalLogProcessor
             Console.WriteLine("Monthly:");
 
             foreach (var typeGroup in transactions.GroupBy(t => t.DateTime.Month.ToString()))
-                Console.WriteLine($"{typeGroup.Key.PadRight(10)} : {typeGroup.Sum(t => (decimal)t.GST):C}");
+                Console.WriteLine($"{typeGroup.Sum(t => (decimal)t.GST):C}");
 
             Console.WriteLine($"Done!");
         }
