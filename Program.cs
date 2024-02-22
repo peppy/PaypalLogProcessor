@@ -132,6 +132,25 @@ namespace PaypalLogProcessor
                 }
             }
 
+
+            var massPayments = transactions.Where(t => t.Type == "Mass payment").ToList();
+
+            Console.WriteLine($"Adding currency rates for {massPayments.Count()} found mass payments...");
+
+            foreach (var originalTransaction in massPayments)
+            {
+                if (originalTransaction.Currency == "USD")
+                    continue;
+
+                // Mass payments are fucked.
+                var conversion = conversions.First(t =>
+                    t.ReferenceTxnID == originalTransaction.ReferenceTxnID && t.Currency == "USD");
+
+                originalTransaction.Rate = conversion.Net / originalTransaction.Net;
+                originalTransaction.NetUSD = conversion.Net;
+            }
+
+
             Console.WriteLine("Summary:");
 
             foreach (var typeGroup in transactions.GroupBy(t => t.Type))
@@ -182,9 +201,9 @@ namespace PaypalLogProcessor
         {
             using (var writer = File.CreateText(filename))
             using (var csv = new CsvWriter(writer, new Configuration
-            {
-                QuoteAllFields = true,
-            }))
+                   {
+                       QuoteAllFields = true,
+                   }))
             {
                 csv.WriteRecords(output);
             }
@@ -200,9 +219,9 @@ namespace PaypalLogProcessor
 
                 Console.WriteLine($"Reading from {f}...");
                 using (var csv = new CsvReader(File.OpenText(f), new Configuration
-                {
-                    PrepareHeaderForMatch = s => s.Replace(" ", "")
-                }))
+                       {
+                           PrepareHeaderForMatch = s => s.Replace(" ", "")
+                       }))
                 {
                     transactions.AddRange(csv.GetRecords<dynamic>());
                 }
