@@ -100,6 +100,8 @@ namespace PaypalLogProcessor
 
         private static void outputExpenses(List<dynamic> transactions)
         {
+            var originalTransactions = transactions;
+
             transactions = transactions
                 .Where(t => t.BalanceImpact == "Debit")
                 .Where(t => t.Status == "Completed" || t.Status == "Pending")
@@ -116,11 +118,12 @@ namespace PaypalLogProcessor
             // associate currency conversions and rates
             foreach (var c in conversions)
             {
-                var txn = transactions.FirstOrDefault(t => t.TransactionID == c.ReferenceTxnID);
-                if (txn != null)
+                var originalTransaction = originalTransactions.FirstOrDefault(t => t.TransactionID == c.ReferenceTxnID);
+
+                if (originalTransaction != null)
                 {
-                    txn.Rate = c.Net / txn.Net;
-                    txn.NetUSD = c.Net;
+                    originalTransaction.Rate = c.Net / originalTransaction.Net;
+                    originalTransaction.NetUSD = c.Net;
                 }
                 else
                 {
