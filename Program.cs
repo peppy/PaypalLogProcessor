@@ -18,6 +18,7 @@ namespace PaypalLogProcessor
             "Payment Refund",
             //"General Currency Conversion",
             //"General Payment",
+            "User-initiated currency conversion",
             "Account Hold for Open Authorisation",
             //"Pre-approved Payment Bill User Payment",
             "Payment Reversal",
