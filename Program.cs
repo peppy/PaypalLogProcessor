@@ -159,7 +159,12 @@ namespace PaypalLogProcessor
                     }
                     catch (Exception)
                     {
-                        Console.WriteLine($"Missing conversion rate for transaction {o.Number}");
+                        if (t.Currency == "AUD")
+                            Console.WriteLine(
+                                $"Missing conversion rate for transaction {o.Number} (but was AUD so probably using balance)");
+                        else
+                            Console.WriteLine(
+                                $"WARNING: Missing conversion rate for transaction {o.Number} (for currency {t.Currency})");
                     }
                 }
 
