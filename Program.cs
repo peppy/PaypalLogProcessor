@@ -143,7 +143,7 @@ namespace PaypalLogProcessor
                 o.Date = t.Date.PadLeft(10, '0');
                 o.Payee = string.IsNullOrEmpty(t.Name) ? "PayPal" : t.Name;
                 o.Currency = t.Currency;
-                o.Amount = $"{t.Net:2}";
+                o.Amount = $"{t.Net:F2}";
                 o.Number = t.TransactionID;
                 o.Notes = string.Join('\t', new[] { t.Subject, t.Note }.Where(s => !string.IsNullOrEmpty(s)));
                 o.Type = t.Type;
