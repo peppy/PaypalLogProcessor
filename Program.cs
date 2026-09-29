@@ -47,6 +47,16 @@ namespace PaypalLogProcessor
 
             List<dynamic> transactions = getTransactions();
 
+
+            if (transactions.Count == 0)
+            {
+                Console.WriteLine("No transactions were found.");
+                Console.WriteLine();
+                Console.WriteLine("Please ensure csv exports are in current working folder:");
+                Console.WriteLine(Environment.CurrentDirectory);
+                return;
+            }
+
             Console.WriteLine($"Read {transactions.Count} transactions");
             Console.WriteLine();
 
