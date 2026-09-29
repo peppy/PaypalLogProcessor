@@ -143,22 +143,24 @@ namespace PaypalLogProcessor
             }
 
 
-            var massPayments = transactions.Where(t => t.Type == "Mass payment").ToList();
+            // 2026 update: paypal seems to have fixed this and the following code is no longer needed.
 
-            Console.WriteLine($"Adding currency rates for {massPayments.Count()} found mass payments...");
-
-            foreach (var originalTransaction in massPayments)
-            {
-                if (originalTransaction.Currency == "USD")
-                    continue;
-
-                // Mass payments are fucked.
-                var conversion = conversions.First(t =>
-                    t.ReferenceTxnID == originalTransaction.ReferenceTxnID && t.Currency == "USD");
-
-                originalTransaction.Rate = conversion.Net / originalTransaction.Net;
-                originalTransaction.NetUSD = conversion.Net;
-            }
+            // var massPayments = transactions.Where(t => t.Type == "Mass payment").ToList();
+            //
+            // Console.WriteLine($"Adding currency rates for {massPayments.Count()} found mass payments...");
+            //
+            // foreach (var originalTransaction in massPayments)
+            // {
+            //     if (originalTransaction.Currency == "USD")
+            //         continue;
+            //
+            //     // Mass payments are fucked.
+            //     var conversion = conversions.First(t =>
+            //         t.ReferenceTxnID == originalTransaction.ReferenceTxnID && t.Currency == "USD");
+            //
+            //     originalTransaction.Rate = conversion.Net / originalTransaction.Net;
+            //     originalTransaction.NetUSD = conversion.Net;
+            // }
 
 
             Console.WriteLine("Summary:");
